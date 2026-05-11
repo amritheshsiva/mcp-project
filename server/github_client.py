@@ -1,38 +1,3 @@
-# import requests
-# import base64
-# from decouple import config
-# GITHUB_TOKEN = config("GITHUB_TOKEN")
-# OWNER = config("GITHUB_OWNER")
-# REPO = config("GITHUB_REPO")
-
-# BASE_URL = f"https://api.github.com/repos/{OWNER}/{REPO}"
-
-# headers = {
-#     "Authorization": f"Bearer {GITHUB_TOKEN}",
-#     "Accept": "application/vnd.github+json"
-# }
-# def list_repository_files():
-#     url = f"{BASE_URL}/contents"
-#     response = requests.get(url, headers=headers)
-#     return response.json()  
-
-# def read_repository_file(file_path):
-#     url = f"{BASE_URL}/contents/{file_path}"
-#     response = requests.get(url, headers=headers)
-#     data = response.json()
-#     if response.status_code != 200:
-#         return data
-
-#     content = data.get("content", "")
-#     encoding = data.get("encoding")
-#     if encoding == "base64":
-#         content = base64.b64decode(content).decode("utf-8")
-
-#     return {
-#         "name": data.get("name"),
-#         "path": data.get("path"),
-#         "content": content
-#     }
 import base64
 from dataclasses import dataclass
 from typing import Optional

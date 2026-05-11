@@ -1,19 +1,3 @@
-# from server.github_client import read_repository_file
-
-
-# def read_file(file_path):
-#     data = read_repository_file(file_path)
-#     if "content" not in data:
-#         return {
-#             "error": data.get("message", "Unable to read file"),
-#             "path": file_path
-#         }
-
-#     return {
-#         "name": data["name"],
-#         "path": data["path"],
-#         "content": data["content"]
-#     }
 from server.github_client import (
     GitHubError,
     GitHubFile,
