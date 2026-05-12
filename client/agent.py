@@ -38,12 +38,13 @@ def _extract_filename(question: str) -> str | None:
 # Core agent
 # ---------------------------------------------------------------------------
 
+# To start MCP server by running : python -m server.server
 async def run_agent(user_question: str) -> str:
     server_params = StdioServerParameters(
         command="python",
         args=["-m", "server.server"],
     )
-
+# Creates communication pipes
     async with stdio_client(server_params) as (read, write):
         async with ClientSession(read, write) as session:
             await session.initialize()
@@ -51,7 +52,7 @@ async def run_agent(user_question: str) -> str:
             # ----------------------------------------------------------------
             # Branch 1: Notion questions
             # ----------------------------------------------------------------
-            if "note" in user_question.lower():
+            if "notion" in user_question.lower() or "note" in user_question.lower():
                 context = _text(await session.call_tool("get_notion_page", {}))
                 prompt = _build_prompt(user_question, context)
                 return ask_llm(prompt)
@@ -131,16 +132,16 @@ async def _find_and_read(session: ClientSession, filename: str) -> str:
 
 
 def _build_prompt(question: str, context: str) -> str:
-    return f"""You are a helpful assistant with access to a GitHub repository.
+    return f"""You are a helpful assistant with access to GitHub repository data and Notion page data.
 
 User Question:
 {question}
 
-Context (retrieved from the repository):
+Context (retrieved from the relevant MCP tool):
 {context}
 
 Answer the question using ONLY the context above. Do not guess or invent content.
-If the context contains the file contents, quote them directly in your answer.
+If the context contains file or Notion page contents, quote them directly in your answer.
 """
 
 
@@ -157,3 +158,117 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+# import asyncio
+# from mcp import ClientSession, StdioServerParameters
+# from mcp.client.stdio import stdio_client
+
+# from client.ai_client import ask_llm
+
+
+# async def run_agent(user_question: str):
+
+#     # Start MCP server
+#     server_params = StdioServerParameters(
+#         command="python",
+#         args=["-m", "server.server"]
+#     )
+
+#     # Create MCP connection
+#     async with stdio_client(server_params) as (read, write):
+
+#         # Create session
+#         async with ClientSession(read, write) as session:
+
+#             # Initialize MCP
+#             await session.initialize()
+
+#             # -----------------------------
+#             # NOTION QUESTIONS
+#             # -----------------------------
+#             if "notion" in user_question.lower() or "note" in user_question.lower():
+
+#                 result = await session.call_tool(
+#                     "get_notion_page",
+#                     {}
+#                 )
+
+#                 context = result.content[0].text
+
+#             # -----------------------------
+#             # READ FILE QUESTIONS
+#             # -----------------------------
+#             elif "read" in user_question.lower() or "inside" in user_question.lower():
+
+#                 # Example:
+#                 # "read app.py"
+
+#                 words = user_question.split()
+
+#                 filename = None
+
+#                 for word in words:
+#                     if "." in word:
+#                         filename = word
+#                         break
+
+#                 if filename:
+
+#                     result = await session.call_tool(
+#                         "get_file_content",
+#                         {
+#                             "file_path": filename
+#                         }
+#                     )
+
+#                     context = result.content[0].text
+
+#                 else:
+#                     context = "No filename found."
+
+#             # -----------------------------
+#             # DEFAULT → LIST FILES
+#             # -----------------------------
+#             else:
+
+#                 result = await session.call_tool(
+#                     "list_files",
+#                     {}
+#                 )
+
+#                 context = result.content[0].text
+
+#             # -----------------------------
+#             # FINAL PROMPT
+#             # -----------------------------
+#             final_prompt = f"""
+# User Question:
+# {user_question}
+
+# Retrieved Context:
+# {context}
+
+# Answer using only the retrieved context.
+# """
+
+#             # Ask LLM
+#             response = ask_llm(final_prompt)
+
+#             return response
+
+
+# def main():
+
+#     user_question = input("\nAsk Question: ")
+
+#     response = asyncio.run(
+#         run_agent(user_question)
+#     )
+
+#     print("\nAI Response:\n")
+#     print(response)
+
+
+# if __name__ == "__main__":
+#     main()

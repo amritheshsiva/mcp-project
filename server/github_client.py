@@ -100,3 +100,68 @@ def read_multiple_files(file_paths: list[str]) -> dict[str, GitHubFile | GitHubE
     Returns a dict mapping each file path to either a GitHubFile or a GitHubError.
     """
     return {path: read_repository_file(path) for path in file_paths}
+# import requests
+# import base64
+
+# from decouple import config
+
+
+# # ENV VARIABLES
+# GITHUB_TOKEN = config("GITHUB_TOKEN")
+# OWNER = config("GITHUB_OWNER")
+# REPO = config("GITHUB_REPO")
+
+
+# # GITHUB API URL
+# BASE_URL = f"https://api.github.com/repos/{OWNER}/{REPO}"
+
+
+# # HEADERS
+# HEADERS = {
+#     "Authorization": f"Bearer {GITHUB_TOKEN}"
+# }
+
+
+# # ----------------------------------------
+# # LIST FILES
+# # ----------------------------------------
+
+# def list_repository_files():
+
+#     url = f"{BASE_URL}/contents"
+
+#     response = requests.get(
+#         url,
+#         headers=HEADERS
+#     )
+
+#     return response.json()
+
+
+# # ----------------------------------------
+# # READ FILE
+# # ----------------------------------------
+
+# def read_repository_file(file_path: str):
+
+#     url = f"{BASE_URL}/contents/{file_path}"
+
+#     response = requests.get(
+#         url,
+#         headers=HEADERS
+#     )
+
+#     data = response.json()
+
+#     # GitHub returns base64 content
+#     encoded_content = data["content"]
+
+#     decoded_content = base64.b64decode(
+#         encoded_content
+#     ).decode("utf-8")
+
+#     return {
+#         "name": data["name"],
+#         "path": data["path"],
+#         "content": decoded_content
+#     }
